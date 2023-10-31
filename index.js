@@ -70,12 +70,13 @@ client.on('message', async function (msg) {
                     if (msg.text === '/logrender') {
                         await client.sendDocument(msg.chat.id.toString(), DataHandler.getRenderLog(msg.from.username, msg.from.id, msg.message_id, getDate()))
                     }
-                    else if (msg.text === '/getbanlist') { /** works */
+                    else if (msg.text === '/getbanlist') {
+                        /** works */
                         SecuritySystem.isAdmin(msg.from.username, async function (result) {
                             if (result === true)
-                                try{
+                                try {
                                     await client.sendMessage(msg.chat.id, Admin._getbanlist().content.toString())
-                                }catch (e) {
+                                } catch (e) {
                                     try {
                                         await client.sendDocument(msg.chat.id, Admin._getbanlist().path)
                                     } catch (e) {
