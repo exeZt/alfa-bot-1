@@ -1,0 +1,2 @@
+
+{"дата":"30.10.2023 time: 23:56:19","пользователь":{"user_info":{"id":904894186,"is_bot":false,"first_name":"`","username":"piurg","language_code":"ru","is_premium":true},"user_name":"piurg","user_query":"/getlog","user_response":true},"имя_пользователя":{"user_info":{"id":904894186,"is_bot":false,"first_name":"`","username":"piurg","language_code":"ru","is_premium":true},"user_name":"piurg","user_query":"/getlog","user_response":true}}
