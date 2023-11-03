@@ -156,25 +156,28 @@ client.on('message', async function (msg) {
                                     .then(() => client.deleteMessage(msg.chat.id, msg.message_id))
                                     .then(() => client.deleteMessage(msg.from.id, msg.message_id))
                             } else {
-                                client.sendMessage(msg.chat.id, await d, {
+                                await client.sendMessage(msg.chat.id, await d, {
                                     parse_mode: telegramSettings.parse_mode
-                                }).then(() => DataHandler.callFileFromRenderer(msg.text, function (res) {
-                                    try {
-                                        client.sendDocument(msg.chat.id, res)
-                                    } catch (e) {
-                                    }
-                                }))
+                                })
                                 try {
-                                    await DataHandler.callMediaFromRenderer(msg.text, async function (res) {// TODO: Фикс видео
+                                    await DataHandler.callMediaFromRenderer(msg.text, async function (res) {
                                         try{
                                             await client.sendVideo(msg.chat.id, res, {
                                                 reply_to_message_id: msg.from.message_id
                                             });
-                                        }catch (e) {
-
-                                        }
+                                        }catch (e) {}
                                     })
                                 } catch (e) {
+                                }
+                                try{
+                                    await DataHandler.callFileFromRenderer(msg.text, async function (res) { // TODO: Send more than 1 file
+                                        try {
+                                            await client.sendDocument(msg.chat.id, res)
+                                        } catch (e) {
+                                        }
+                                    })
+                                }catch(e){
+
                                 }
                             }
                         })
