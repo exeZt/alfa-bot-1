@@ -81,20 +81,32 @@ client.on('message', async function (msg) {
                     }
             })
         } else if (msg.text === '/help') {
-            /** works */
             await client.sendMessage(msg.chat.id, Admin._help())
         } else if (msg.text === '/cls') {
-            /** works */
             SecuritySystem.isAdmin(msg.from.username, function (result) {
                 if (result === true)
                     console.clear();
             })
         } else if (msg.text === '/ref') {
-            /** works */
             await SecuritySystem.isAdmin(msg.from.username, async function (result) {
                 if (result === true) {
                     await Admin._refresh_data();
                     await client.sendMessage(msg.chat.id, 'Информация обновлена');
+                }
+            })
+        } else if (msg.text === '/shutdown') {
+            await SecuritySystem.isAdmin(msg.from.username, async function (result) {
+                if (result === true) {
+                    process.exit();
+                }
+            })
+        }
+        else if (msg.text === '/start'){
+            await DataHandler.responseRenderer('/start', async function (d) {
+                if (isKeyBoard(await d)) {
+                    client.sendMessage(msg.chat.id, msg.text, await d)
+                        .then(() => client.deleteMessage(msg.chat.id, msg.message_id))
+                        .then(() => client.deleteMessage(msg.from.id, msg.message_id))
                 }
             })
         }
