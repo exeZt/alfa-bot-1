@@ -96,9 +96,8 @@ client.on('message', async function (msg) {
             })
         } else if (msg.text === '/shutdown') {
             await SecuritySystem.isAdmin(msg.from.username, async function (result) {
-                if (result === true) {
+                if (result === true)
                     process.exit();
-                }
             })
         }
         else if (msg.text === '/start'){
@@ -146,18 +145,22 @@ client.on('message', async function (msg) {
             SecuritySystem.isBanned(msg.from.username, async function (result) {
                 if (result === true) {
                     /** works */
-                    console.trace(`USER ${msg.from.username} is banned, history will be cleared`)
-                    await client.sendMessage(msg.chat.id, `_banned ${msg.from.username}`)
-                    setTimeout(async () => {
-                        let k = 0;
-                        for (let i = 0; i <= 200; i++) {
-                            try {
-                                k = msg.message_id - i
-                                await client.deleteMessage(msg.chat.id, k)
-                            } catch (e) {
+                    try{
+                        console.trace(`USER ${msg.from.username} is banned, history will be cleared`)
+                        await client.sendMessage(msg.chat.id, `_banned ${msg.from.username}`)
+                        setTimeout(async () => {
+                            let k = 0;
+                            for (let i = 0; i <= 200; i++) {
+                                try {
+                                    k = msg.message_id - i
+                                    await client.deleteMessage(msg.chat.id, k)
+                                } catch (e) {
+                                }
                             }
-                        }
-                    }, 2000)
+                        }, 2000)
+                    }catch (e) {
+
+                    }
                 } else {
                     try {
                         JSON.parse(SecuritySystem.getDataAuth_user())
@@ -173,9 +176,13 @@ client.on('message', async function (msg) {
                                 console.log(true)
                                 await DataHandler.responseRenderer(msg.text, async function (d) {
                                     if (isKeyBoard(await d)) {
-                                        client.sendMessage(msg.chat.id, msg.text, await d)
-                                            .then(() => client.deleteMessage(msg.chat.id, msg.message_id))
-                                            .then(() => client.deleteMessage(msg.from.id, msg.message_id))
+                                        try {
+                                            client.sendMessage(msg.chat.id, msg.text, await d)
+                                                .then(() => client.deleteMessage(msg.chat.id, msg.message_id))
+                                                .then(() => client.deleteMessage(msg.from.id, msg.message_id))
+                                        }catch (e) {
+
+                                        }
                                     } else {
                                         try {
                                             if (await d.split('').length > 4090){
@@ -184,11 +191,16 @@ client.on('message', async function (msg) {
                                                 const firstPart = a.slice(0, midIndex).join(' ');
                                                 const secondPart = a.slice(midIndex).join(' ');
                                                 try {
-                                                    await client.sendMessage(msg.chat.id, firstPart, {
-                                                        parse_mode: telegramSettings.parse_mode,
-                                                    }).then(async () => await client.sendMessage(msg.chat.id, secondPart, {
-                                                        parse_mode: telegramSettings.parse_mode,
-                                                    }))
+                                                    try {
+                                                        await client.sendMessage(msg.chat.id, firstPart, {
+                                                            parse_mode: telegramSettings.parse_mode,
+                                                        }).then(async () => await client.sendMessage(msg.chat.id, secondPart, {
+                                                            parse_mode: telegramSettings.parse_mode,
+                                                        }))
+                                                    }catch (e) {
+                                                        await client.sendMessage(msg.chat.id, firstPart)
+                                                            .then(async () => await client.sendMessage(msg.chat.id, secondPart))
+                                                    }
                                                 }catch (e) {
                                                     console.log(e)
                                                     await client.sendMessage(msg.chat.id, 'Wow, looks like your message contains more than 8200 symbols!\n you need to cut it', {
@@ -196,14 +208,16 @@ client.on('message', async function (msg) {
                                                     })
                                                 }
                                             }else {
-                                                await client.sendMessage(msg.chat.id, await d, {
-                                                    parse_mode: telegramSettings.parse_mode,
-                                                })
+                                                try {
+                                                    await client.sendMessage(msg.chat.id, await d, {
+                                                        parse_mode: telegramSettings.parse_mode,
+                                                    })
+                                                }catch (e) {
+                                                    await client.sendMessage(msg.chat.id, await d)
+                                                }
                                             }
                                         }catch (e) {
-                                            await client.sendMessage(msg.chat.id, await d, {
-                                                parse_mode: telegramSettings.parse_mode,
-                                            })
+                                            await client.sendMessage(msg.chat.id, await d)
                                         }
                                         try {
                                             await DataHandler.callMediaFromRenderer(msg.text, async function (res) {
