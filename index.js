@@ -203,9 +203,8 @@ client.on('message', async function (msg) {
                                                     }
                                                 }catch (e) {
                                                     console.log(e)
-                                                    await client.sendMessage(msg.chat.id, 'Wow, looks like your message contains more than 8200 symbols!\n you need to cut it', {
-                                                        parse_mode: telegramSettings.parse_mode,
-                                                    })
+                                                    await client.sendMessage(msg.chat.id, 'Wow, looks like your message contains more than 8200 symbols!\n ' +
+                                                        'you need to cut it')
                                                 }
                                             }else {
                                                 try {
@@ -259,24 +258,19 @@ client.on('message', async function (msg) {
                                                     } else {
                                                         await client.sendDocument(msg.chat.id, res??res[0])
                                                     }
-                                                } catch (e) {
-                                                }
+                                                } catch (e) {}
                                             })
-                                        } catch (e) {
-
-                                        }
+                                        } catch (e) {}
                                     }
                                 })
                                 break;
                             }
                         }
-                    } catch (e) {
-                    }
+                    } catch (e) {}
                 }
             })
         }
         catch (e) {
-
         }
     }
 })
