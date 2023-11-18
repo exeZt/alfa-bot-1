@@ -192,11 +192,59 @@ client.on('message', async function (msg) {
                                                 const secondPart = a.slice(midIndex).join(' ');
                                                 try {
                                                     try {
-                                                        await client.sendMessage(msg.chat.id, firstPart, {
-                                                            parse_mode: telegramSettings.parse_mode,
-                                                        }).then(async () => await client.sendMessage(msg.chat.id, secondPart, {
-                                                            parse_mode: telegramSettings.parse_mode,
-                                                        }))
+                                                        await DataHandler.callPhotoFromRenderer(msg.text, async function (res) {
+                                                            if (res){
+                                                                if (Array.isArray(res)) {
+                                                                    for (const el of res) {
+                                                                        try {
+                                                                            await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${el.trim()}`, {
+                                                                                parse_mode: telegramSettings.parse_mode,
+                                                                                caption: firstPart
+                                                                            })
+                                                                        }
+                                                                        catch (e) {
+                                                                            await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${el.trim()}`, {
+                                                                                caption: firstPart
+                                                                            })
+                                                                        }
+                                                                    }
+                                                                    await client.sendMessage(msg.chat.id, secondPart, {
+                                                                        parse_mode: telegramSettings.parse_mode,
+                                                                    })
+                                                                } else {
+                                                                    try {
+                                                                        await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${res[0].trim() || res.trim()}`, {
+                                                                            parse_mode: telegramSettings.parse_mode,
+                                                                            caption: firstPart
+                                                                        }).then(async () =>
+                                                                            await client.sendMessage(msg.chat.id, secondPart, {
+                                                                                parse_mode: telegramSettings.parse_mode,
+                                                                            })
+                                                                        )
+                                                                    }catch (e) {
+                                                                        try{
+                                                                            await client.sendMessage(msg.chat.id, firstPart, {
+                                                                                parse_mode: telegramSettings.parse_mode,
+                                                                            }).then(async () => await client.sendMessage(msg.chat.id, secondPart, {
+                                                                                parse_mode: telegramSettings.parse_mode,
+                                                                            }))
+                                                                        }catch (e) {
+                                                                            await client.sendMessage(msg.chat.id, firstPart).then(async () => await client.sendMessage(msg.chat.id, secondPart))
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }else {
+                                                                try{
+                                                                    await client.sendMessage(msg.chat.id, firstPart, {
+                                                                        parse_mode: telegramSettings.parse_mode,
+                                                                    }).then(async () => await client.sendMessage(msg.chat.id, secondPart, {
+                                                                        parse_mode: telegramSettings.parse_mode,
+                                                                    }))
+                                                                }catch (e) {
+                                                                    await client.sendMessage(msg.chat.id, firstPart).then(async () => await client.sendMessage(msg.chat.id, secondPart))
+                                                                }
+                                                            }
+                                                        })
                                                     }catch (e) {
                                                         await client.sendMessage(msg.chat.id, firstPart)
                                                             .then(async () => await client.sendMessage(msg.chat.id, secondPart))
@@ -206,10 +254,60 @@ client.on('message', async function (msg) {
                                                     await client.sendMessage(msg.chat.id, 'Wow, looks like your message contains more than 8200 symbols!\n ' +
                                                         'you need to cut it')
                                                 }
-                                            }else {
+                                            } else {
                                                 try {
-                                                    await client.sendMessage(msg.chat.id, await d, {
-                                                        parse_mode: telegramSettings.parse_mode,
+                                                    await DataHandler.callPhotoFromRenderer(msg.text, async function (res) {
+                                                        console.log(`${res} --save`)
+                                                        if (res !== null && res !== 'null'){
+                                                            if (Array.isArray(res)) {
+                                                                let length = res.length;
+                                                                let i = 0;
+                                                                for (const item of res) {
+                                                                    if (i !== length-1){
+                                                                        try {
+                                                                            await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${res[0].trim()}`, {
+                                                                                parse_mode: telegramSettings.parse_mode
+                                                                            })
+                                                                        }
+                                                                        catch (e) {
+                                                                            await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${res[0].trim()}`)
+                                                                        }
+                                                                    }else {
+                                                                        try {
+                                                                            await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${res[0].trim()}`, {
+                                                                                parse_mode: telegramSettings.parse_mode,
+                                                                                caption: d
+                                                                            })
+                                                                        }
+                                                                        catch (e) {
+                                                                            await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${res[0].trim()}`, {
+                                                                                caption: d
+                                                                            })
+                                                                        }
+                                                                    }
+                                                                    i++;
+                                                                }
+                                                            } else {
+                                                                try {
+                                                                    await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${res[0].trim() || res.trim()}`, {
+                                                                        parse_mode: telegramSettings.parse_mode,
+                                                                        caption: d
+                                                                    })
+                                                                }catch (e) {
+                                                                    await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}${res.trim()}`, {
+                                                                        caption: d
+                                                                    })
+                                                                }
+                                                            }
+                                                        } else {
+                                                            try {
+                                                                await client.sendMessage(msg.chat.id, await d, {
+                                                                    parse_mode: telegramSettings.parse_mode,
+                                                                })
+                                                            }catch (e) {
+                                                                await client.sendMessage(msg.chat.id, await d)
+                                                            }
+                                                        }
                                                     })
                                                 }catch (e) {
                                                     await client.sendMessage(msg.chat.id, await d)
@@ -250,7 +348,11 @@ client.on('message', async function (msg) {
                                                     if (Array.isArray(res)) {
                                                         for (const el of res) {
                                                             try {
-                                                                await client.sendDocument(msg.chat.id, `${PathData.path_to_files}${el.trim()}`)
+                                                                // if (el.contains('.png') || el.contains('.jpg') || el.contains('.jpeg'))
+                                                                //     await client.sendPhoto(msg.chat.id, `${PathData.path_to_files}/${el}`, {
+                                                                //     })
+                                                                // else
+                                                                    await client.sendDocument(msg.chat.id, `${PathData.path_to_files}${el.trim()}`)
                                                             } catch (e) {
                                                                 await client.sendDocument(msg.chat.id, `${PathData.path_to_files}${el}`)
                                                             }
